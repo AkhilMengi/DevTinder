@@ -2,14 +2,24 @@ const express = require('express');
 
 const app = express();
 
-app.get('/',(req,res)=>{
-    res.send("Hello From Dashboard")
-});
-app.get("/test",(req,res)=>{
-    res.send("Hello From Test")
+const data ={
+    "firstName":"Akhil",
+    "lastName":"Mengi"
+}
+
+app.get('/user',(req,res)=>{
+    res.send(data)
 })
-app.get("/hello",(req,res)=>{
-    res.send("Hello From Hello World")
+
+app.post('/user',(req,res)=>{
+    res.send("User added successfully")
+})
+
+app.patch('/user',(req,res)=>{
+    res.send("Information is updated in DB")
+})
+app.delete('/user',(req,res)=>{
+    res.send("User deleted Successfully")
 })
 
 app.listen(3100,()=>{
