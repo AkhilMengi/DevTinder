@@ -2,14 +2,30 @@ const express = require('express');
 
 const app = express();
 
+const {adminAuth,userAuth} = require('../middleware/authorization')
+
 const data ={
     "firstName":"Akhil",
     "lastName":"Mengi"
 }
 
-app.get('/user',(req,res)=>{
-    res.send(data)
+app.use('/admin',adminAuth)
+
+app.get('/admin/getAllUser',(req,res)=>{
+    res.send("All information")
 })
+
+app.get('/admin/deleteUser',(req,res)=>{
+    res.send("User deleted")
+})
+
+app.get('/user',adminAuth, (req, res, next) => {
+    console.log("1st handler");
+    res.send("Response from the first handler"); // Sends response and ends request
+    
+});
+
+
 
 app.post('/user',(req,res)=>{
     res.send("User added successfully")
