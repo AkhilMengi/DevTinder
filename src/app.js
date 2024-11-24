@@ -40,10 +40,22 @@ app.delete('/user', async (req,res)=>{
     }
 })
 
-app.patch('/user',async(req,res)=>{
-    const userId = req.body.userId;
+app.patch('/user/:id',async(req,res)=>{
+    const userId = req.params.userId;
     const data = req.body;
     try{
+
+        const ALLOWED_UPDATES=["password","photo","skills"]
+        const isUpdateAllowed = Object.keys(data).every(k=>ALLOWED_UPDATES.includes(k))
+        if(!isUpdateAllowed){
+            throw new Error("Updates not allowed");
+        }
+        if(data.skills.length> 10){
+            throw new Error("Skills cannot be more than 10")
+        }
+        if(data.photo.length >1){
+            throw new Error("You can not add more than 1 photo")
+        }
         const user = await User.findByIdAndUpdate({_id:userId},data,{
             new:true,
             runValidators:true
@@ -78,6 +90,9 @@ app.post("/signup", async (req, res) => {
     const user = new User(req.body); // Create a new User instance with request body
 
     try {
+        if(user.skills.length> 10){
+            throw new Error("Skills cannot be more than 10")
+        }
         await user.save(); // Save the user to the database
         res.status(201).send("User added successfully"); // Respond with success
     } catch (error) {
