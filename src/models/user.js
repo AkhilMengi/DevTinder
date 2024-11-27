@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require('validator')
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
+        // required: true,
         unique: true,
         lowercase: true,
         trim: true,
@@ -33,13 +34,19 @@ const userSchema = new mongoose.Schema({
         },
     }, password: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
-        minLength: 5,
-        maxLength: 20,
+        // minLength: 5,
+        // maxLength: 20,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Enter a strong password: " + value)
+
+            }
+        }
     }, gender: {
         type: String,
-        required: true,
+        // required: true,
         validate: {
             validator: function (value) {
                 // Allowed values for gender
@@ -51,10 +58,16 @@ const userSchema = new mongoose.Schema({
     }, age: {
         type: Number,
         min: 18,
-        required: true,
+        // required: true,
     }, photo: {
         type: String,
-        default: "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1732441727~exp=1732445327~hmac=53706f44398272660c8386633d9f29a1754a6dbf40354aa030067b49a318a3b7&w=740"
+        default: "http://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1732441727~exp=1732445327~hmac=53706f44398272660c8386633d9f29a1754a6dbf40354aa030067b49a318a3b7&w=740",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Invalid URL")
+
+            }
+        }
     }, skills: {
         type: [String]
     }
