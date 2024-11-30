@@ -69,4 +69,49 @@ authRouter.post('/signIn', async (req, res) => {
     }
 })
 
+authRouter.post('/logout', async (req, res) => {
+    try {
+      // Invalidate the cookie by clearing it
+      res.cookie("token", "", { 
+        expires: new Date(0), // Expire the cookie immediately
+        httpOnly: true, // Prevent client-side access
+        secure:true, // Only use HTTPS in production
+        sameSite: 'strict' // Prevent CSRF attacks
+      });
+  
+      res.status(200).json({ message: "User successfully logged out" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ message: "An error occurred during logout" });
+    }
+  });
+//   authRouter.post('/logout', async (req, res) => {
+//     try {
+//       // Extract refresh token from secure cookie
+//       const refreshToken = req.cookies.refreshToken;
+  
+//       if (!refreshToken) {
+//         return res.status(400).json({ message: "No refresh token provided" });
+//       }
+  
+//       // Invalidate refresh token in the database
+//       await db.collection('refreshTokens').deleteOne({ token: refreshToken });
+  
+//       // Optionally, block the access token
+//       const accessToken = req.headers.authorization?.split(' ')[1];
+//       if (accessToken) {
+//         revokeToken(accessToken, 15 * 60); // Add to blocklist for 15 minutes
+//       }
+  
+//       // Clear cookies on the client
+//       res.cookie("refreshToken", "", { expires: new Date(0), httpOnly: true, secure: true, sameSite: 'strict' });
+//       res.cookie("accessToken", "", { expires: new Date(0), httpOnly: true, secure: true, sameSite: 'strict' });
+  
+//       res.status(200).json({ message: "User successfully logged out" });
+//     } catch (error) {
+//       console.error("Logout error:", error);
+//       res.status(500).json({ message: "An error occurred during logout" });
+//     }
+//   });
+  
 module.exports = authRouter;
