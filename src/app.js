@@ -62,13 +62,13 @@ app.post('/signIn', async (req, res) => {
         if (!existingUser) {
             throw new Error("Email is not present in DB")
         }
-        const isPasswordValid = await bcrypt.compare(password, existingUser.password)
+        const isPasswordValid = await existingUser.validatePassword(password)
         if (isPasswordValid) {
 
-            const token = await jwt.sign({ _id: existingUser._id }, "SECRET_KEY@123",{expiresIn:'1h'})
+            const token = await existingUser.getJWT()
             console.log(token)
-
-            res.cookie("token", token,{expires:new Date.now() +900000})
+            const expirationDate = new Date(Date.now() + 15 * 60 * 1000);
+            res.cookie("token", token,{expires: expirationDate})
 
             res.send("User registered Successfully")
         } else {
