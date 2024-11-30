@@ -65,10 +65,10 @@ app.post('/signIn', async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, existingUser.password)
         if (isPasswordValid) {
 
-            const token = await jwt.sign({ _id: existingUser._id }, "SECRET_KEY@123",)
+            const token = await jwt.sign({ _id: existingUser._id }, "SECRET_KEY@123",{expiresIn:'1h'})
             console.log(token)
 
-            res.cookie("token", token)
+            res.cookie("token", token,{expires:new Date.now() +900000})
 
             res.send("User registered Successfully")
         } else {
@@ -92,6 +92,15 @@ app.get('/profile', userAuth, async (req, res) => {
         res.status(400).send("error:" + error.message)
     }
 
+})
+
+app.post('/sendConnectionRequest',userAuth,async(req,res)=>{
+    try{
+        const user = req.user
+        res.send( user.firstName+ "Connnection request Send")
+    }catch (error) {
+        res.status(400).send("error:" + error.message)
+    }
 })
 
 
