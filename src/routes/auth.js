@@ -1,8 +1,10 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
 const { dataValidation } = require('../utils/validator')
-// const{userAuth} = require('../middleware/authorization')
+const{userAuth} = require('../middleware/authorization')
 const User = require('../models/user')
+
+const validator = require('validator');
 
 const authRouter = express();
 authRouter.post("/signup", async (req, res) => {
@@ -123,5 +125,40 @@ authRouter.post('/passwordRestore',async(req,res)=>{
         
     }
 })
+
+authRouter.post('/changePassword', userAuth, async (req, res) => {
+    try {
+        const { password, newPassword, confirmPassword } = req.body;
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).send("Passwords do not match.");
+        }
+
+        if (!validator.isStrongPassword(newPassword)) {
+            return res.status(400).send("Password does not meet strength requirements.");
+        }
+
+        const user = req.user;
+
+        // Step 5: Compare the current password with the stored hashed password using bcrypt
+        const isMatch = await user.validatePassword(password) // Make sure both args are provided
+        if (!isMatch) {
+            return res.status(400).send("Current password is incorrect.");
+        }
+
+        // Step 6: Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Step 7: Update the password in the database
+        user.password = hashedPassword;
+        await user.save();
+
+
+        res.send({ message: "Password updated successfully." });
+    } catch (error) {
+        res.status(400).send("Error: " + error.message);
+    }
+});
+
   
 module.exports = authRouter;

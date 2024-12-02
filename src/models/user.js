@@ -46,6 +46,18 @@ const userSchema = new mongoose.Schema({
 
             }
         }
+    },confirmPassword: {
+        type: String,
+        // required: true,
+        trim: true,
+        // minLength: 5,
+        // maxLength: 20,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Enter a strong password: " + value)
+
+            }
+        }
     }, gender: {
         type: String,
         // required: true,
