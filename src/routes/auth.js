@@ -1,6 +1,7 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
 const { dataValidation } = require('../utils/validator')
+// const{userAuth} = require('../middleware/authorization')
 const User = require('../models/user')
 
 const authRouter = express();
@@ -113,5 +114,14 @@ authRouter.post('/logout', async (req, res) => {
 //       res.status(500).json({ message: "An error occurred during logout" });
 //     }
 //   });
+
+
+authRouter.post('/passwordRestore',async(req,res)=>{
+    try{
+
+    }catch(error){
+        
+    }
+})
   
 module.exports = authRouter;
